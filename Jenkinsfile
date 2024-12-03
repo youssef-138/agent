@@ -1,37 +1,33 @@
 pipeline {
-     agent { label 'agent1' }
-    parameters {
-        booleanParam(name:'project', defaultValue: true, description:'this paramater help you to know project name')
-        choice(name: 'namespace', choices:['dev','prod','stage'], description: '' ) 
-    }
+    agent any  // Use any available agent/node
 
     stages {
-        stage('check') {
+        stage('Build') {
             steps {
-                echo "checking your code"
-                
-               
+                echo 'Building the application...master'
             }
         }
-
-        stage('test') {
-            when {
-                expression{
-                    params.project == false
-                }
-            }
+        stage('Test') {
             steps {
-                echo "testing your app" 
+                echo 'Running tests...master'
             }
         }
-        
-        stage('deployment') {  
+        stage('Deploy') {
             steps {
-                echo "kubectl apply -f deployment.yaml $params.namespace"
-                echo "your code is deployed right now"
-                echo "this build number $BUILD_NUMBER"
+                echo 'Deploying the application...master'
             }
-        }    
+        }
     }
 
+    post {
+        always {
+            echo 'Pipeline finished!'
+        }
+        success {
+            echo 'Build succeeded!'
+        }
+        failure {
+            echo 'Build failed!'
+        }
+    }
 }
